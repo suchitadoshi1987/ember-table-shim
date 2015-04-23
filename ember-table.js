@@ -798,13 +798,17 @@ jQuery.browser shim that makes HT working with jQuery 1.8+
   * @memberof Ember.Table.TableController
   * @instance
   */
-            prepareTableColumns: Ember.observer(function(tableColumns) {
-                var col, columns, i, _i, _len, _results;
-                for (columns = Ember.isArray(tableColumns) ? tableColumns : this.get("tableColumns"), 
-                _results = [], i = _i = 0, _len = columns.length; _len > _i; i = ++_i) col = columns[i], 
-                col.set("_nextColumn", columns.objectAt(i + 1)), _results.push(col.set("controller", this));
-                return _results;
-            }, "tableColumns.@each", "tableColumns"),
+            _prepareTableColumns: function(tableColumns) {
+	            var col, columns, i, _i, _len, _results;
+	            for (columns = Ember.isArray(tableColumns) ? tableColumns : this.get("tableColumns"),
+		                 _results = [], i = _i = 0, _len = columns.length; _len > _i; i = ++_i) col = columns[i],
+		            col.set("_nextColumn", columns.objectAt(i + 1)), _results.push(col.set("controller", this));
+	            return _results;
+            },
+
+	        prepareTableColumns: Ember.observer(function(tableColumns) {
+		        Ember.run.scheduleOnce('render', this, this._prepareTableColumns);
+	        }, "tableColumns.@each", "tableColumns"),
             actions: {
                 sortByColumn: Ember.K
             },
